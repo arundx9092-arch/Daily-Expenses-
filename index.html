@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Daily Money Tracker - ₹ INR Pro</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(180deg, #eef2ff 0%, #f8fafc 45%, #f1f5f9 100%);
+      --surface: rgba(255, 255, 255, 0.96);
+      --surface-solid: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: rgba(226, 232, 240, 0.95);
+      --primary: #4f46e5;
+      --primary-grad: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --income: #059669;
+      --income-grad: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --income-soft: #ecfdf5;
+      --expense: #e11d48;
+      --expense-grad: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+      --expense-soft: #fff1f2;
+      --savings: #2563eb;
+      --savings-grad: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      --savings-soft: #eff6ff;
+      --radius: 22px;
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 10px 28px rgba(15, 23, 42, 0.07);
+      --shadow-glow: 0 14px 32px rgba(79, 70, 229, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding-bottom: 64px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      padding: 18px 16px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--primary-grad);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.28);
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: var(--text-main);
+    }
+
+    header p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .inr-badge {
+      padding: 7px 12px;
+      border-radius: 12px;
+      border: 1px solid #c7d2fe;
+      background: #eef2ff;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    /* User Profile Bar */
+    .user-bar {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .user-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 1;
+    }
+
+    .user-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .user-chip-wrap {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .user-chip-wrap.active {
+      background: var(--primary-grad);
+      border-color: transparent;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.24);
+    }
+
+    .user-chip {
+      padding: 6px 10px 6px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .user-chip-wrap.active .user-chip {
+      color: #ffffff;
+    }
+
+    .user-del-btn {
+      border: none;
+      background: rgba(15, 23, 42, 0.06);
+      color: #64748b;
+      font-size: 0.7rem;
+      font-weight: 800;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-chip-wrap.active .user-del-btn {
+      background: rgba(255, 255, 255, 0.24);
+      color: #ffffff;
+    }
+
+    .add-user-btn {
+      padding: 6px 11px;
+      border-radius: 99px;
+      border: 1px dashed #818cf8;
+      background: #eef2ff;
+      color: var(--primary);
+      font-size: 0.76rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Hero Balance Card */
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 48%, #4c1d95 100%);
+      color: #ffffff;
+      padding: 20px 20px 18px;
+      border-radius: 26px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      right: -30px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.35), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .balance-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: rgba(255, 255, 255, 0.78);
+      font-weight: 700;
+    }
+
+    .wallet-pill {
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #e0e7ff;
+      white-space: nowrap;
+    }
+
+    .balance-amount {
+      font-size: 2.05rem;
+      font-weight: 800;
+      margin: 6px 0 12px;
+      letter-spacing: -0.7px;
+    }
+
+    .ratio-bar-wrap {
+      background: rgba(255, 255, 255, 0.14);
+      height: 8px;
+      border-radius: 99px;
+      overflow: hidden;
+      display: flex;
+      gap: 2px;
+      margin-bottom: 8px;
+    }
+
+    .ratio-seg {
+      height: 100%;
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .ratio-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    /* Summary Cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      background: var(--surface-solid);
+      padding: 13px 10px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .sum-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      margin-bottom: 7px;
+    }
+
+    .sum-icon.inc { background: var(--income-soft); color: var(--income); }
+    .sum-icon.exp { background: var(--expense-soft); color: var(--expense); }
+    .sum-icon.sav { background: var(--savings-soft); color: var(--savings); }
+
+    .summary-card .title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .summary-card .value {
+      font-size: 0.94rem;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      word-break: break-all;
+    }
+
+    .income-text { color: var(--income); }
+    .expense-text { color: var(--expense); }
+    .savings-text { color: var(--savings); }
+
+    /* Form Card */
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 0.94rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .type-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 5px;
+      border-radius: 16px;
+      margin-bottom: 12px;
+    }
+
+    .type-btn {
+      padding: 10px 6px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .type-btn.active[data-type="Expense"] {
+      background: var(--expense-grad);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.28);
+    }
+
+    .type-btn.active[data-type="Income"] {
+      background: var(--income-grad);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
+    }
+
+    .type-btn.active[data-type="Savings"] {
+      background: var(--savings-grad);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+    }
+
+    .amount-box {
+      position: relative;
+      margin-bottom: 10px;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .amount-box:focus-within {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .amount-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    .amount-box label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .calc-toggle-btn {
+      border: 1px solid #c7d2fe;
+      background: #eef2ff;
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 99px;
+      cursor: pointer;
+    }
+
+    .amount-input-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .currency-prefix {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .amount-box input {
+      border: none;
+      background: transparent;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+      padding: 0;
+      width: 100%;
+      outline: none;
+    }
+
+    /* Simple Calculator Keypad */
+    .calc-pad {
+      display: none;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .calc-pad.open {
+      display: block;
+      animation: slideUp 0.2s ease;
+    }
+
+    .calc-expr {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-align: right;
+      min-height: 18px;
+      margin-bottom: 6px;
+      padding: 0 4px;
+      word-break: break-all;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .calc-key {
+      padding: 10px 4px;
+      border-radius: 11px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    .calc-key:active {
+      transform: scale(0.95);
+    }
+
+    .calc-key.op {
+      background: #eef2ff;
+      color: var(--primary);
+      border-color: #c7d2fe;
+    }
+
+    .calc-key.clr {
+      background: #fff1f2;
+      color: var(--expense);
+      border-color: #fecdd3;
+    }
+
+    .calc-key.eq {
+      background: var(--income-grad);
+      color: #ffffff;
+      border: none;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full {
+      grid-column: span 2;
+    }
+
+    .field-label {
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    input[type="date"], input[type="month"], input[type="number"], input[type="text"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 13px;
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .submit-btn {
+      flex: 1;
+      padding: 13px;
+      border: none;
+      border-radius: 15px;
+      background: var(--primary-grad);
+      color: #ffffff;
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+      transition: transform 0.15s ease;
+    }
+
+    .submit-btn.editing {
+      background: var(--income-grad);
+      box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);
+    }
+
+    .cancel-edit-btn {
+      padding: 13px 14px;
+      border-radius: 15px;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      color: var(--text-main);
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+    }
+
+    .cancel-edit-btn.show {
+      display: inline-block;
+    }
+
+    /* Export / Import Card */
+    .backup-card {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 13px 14px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .backup-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .backup-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .scope-toggle {
+      display: flex;
+      background: #f1f5f9;
+      padding: 2px;
+      border-radius: 99px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .scope-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 9px;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .scope-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .date-range-row {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-top: 4px;
+    }
+
+    .date-range-row.show {
+      display: grid;
+    }
+
+    .backup-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 10px 8px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-main);
+      font-size: 0.77rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* History & Period Filters */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .count-badge {
+      background: #e2e8f0;
+      color: #334155;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.73rem;
+      font-weight: 700;
+    }
+
+    .period-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .period-btn {
+      padding: 6px 12px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .period-btn.active {
+      background: #eef2ff;
+      color: var(--primary);
+      border-color: #a5b4fc;
+    }
+
+    .period-picker-wrap {
+      width: 100%;
+      margin-bottom: 8px;
+      display: none;
+    }
+
+    .period-picker-wrap.show {
+      display: block;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 6px;
+      scrollbar-width: none;
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-tab {
+      padding: 7px 15px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .filter-tab.active {
+      background: var(--text-main);
+      color: #ffffff;
+      border-color: var(--text-main);
+    }
+
+    /* Transaction Cards */
+    .tx-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tx-item {
+      background: var(--surface-solid);
+      padding: 13px 14px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tx-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .tx-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .tx-icon.Income { background: var(--income-soft); }
+    .tx-icon.Expense { background: var(--expense-soft); }
+    .tx-icon.Savings { background: var(--savings-soft); }
+
+    .tx-info {
+      min-width: 0;
+    }
+
+    .tx-cat {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.63rem;
+      padding: 2px 7px;
+      border-radius: 99px;
+      font-weight: 700;
+    }
+
+    .badge.Income { background: var(--income-soft); color: var(--income); }
+    .badge.Expense { background: var(--expense-soft); color: var(--expense); }
+    .badge.Savings { background: var(--savings-soft); color: var(--savings); }
+
+    .user-tag {
+      font-size: 0.63rem;
+      padding: 2px 7px;
+      border-radius: 99px;
+      font-weight: 700;
+      background: #eef2ff;
+      color: #4338ca;
+    }
+
+    .tx-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tx-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .tx-amount {
+      font-size: 0.94rem;
+      font-weight: 800;
+      text-align: right;
+      margin-right: 2px;
+    }
+
+    .edit-btn {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #dbeafe;
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .delete-btn {
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #ffe4e6;
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 34px 20px;
+      color: var(--text-muted);
+      background: var(--surface-solid);
+      border-radius: var(--radius);
+      border: 1.5px dashed #cbd5e1;
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(90px);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 11px 20px;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-logo">💳</div>
+        <div>
+          <h1>Daily Tracker</h1>
+          <p>வரவு, செலவு & சேமிப்பு</p>
+        </div>
+      </div>
+      <div class="inr-badge">🇮🇳 ₹ INR</div>
+    </header>
+
+    <!-- User Selector Bar (Add + Delete) -->
+    <div class="user-bar">
+      <div class="user-pills" id="userPills"></div>
+      <button type="button" class="add-user-btn" id="addUserBtn">+ User</button>
+    </div>
+
+    <!-- Hero Balance Card -->
+    <div class="hero-card">
+      <div class="hero-top">
+        <span class="balance-label">Available Balance</span>
+        <span class="wallet-pill" id="activeScopePill">All Users • ₹</span>
+      </div>
+      <div class="balance-amount" id="netBalance">₹0.00</div>
+
+      <div class="ratio-bar-wrap" title="Expense vs Savings Ratio">
+        <div class="ratio-seg" id="barExpense" style="width: 0%; background: #fb7185;"></div>
+        <div class="ratio-seg" id="barSavings" style="width: 0%; background: #38bdf8;"></div>
+        <div class="ratio-seg" id="barRemain" style="width: 100%; background: rgba(255,255,255,0.25);"></div>
+      </div>
+      <div class="ratio-legend">
+        <span id="expPct">Expense: 0%</span>
+        <span id="savPct">Savings: 0%</span>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="sum-icon inc">↙️</div>
+        <div class="title">Income</div>
+        <div class="value income-text" id="totalIncome">₹0.00</div>
+      </div>
+      <div class="summary-card">
+        <div class="sum-icon exp">↗️</div>
+        <div class="title">Expense</div>
+        <div class="value expense-text" id="totalExpense">₹0.00</div>
+      </div>
+      <div class="summary-card">
+        <div class="sum-icon sav">🏦</div>
+        <div class="title">Savings</div>
+        <div class="value savings-text" id="totalSavings">₹0.00</div>
+      </div>
+    </div>
+
+    <!-- Entry / Edit Form + Simple Calculator -->
+    <div class="card" id="formCard">
+      <div class="section-title">
+        <span id="formTitle">✨ புதிய பதிவு (New Entry)</span>
+      </div>
+      <form id="txForm">
+        <input type="hidden" id="editId" value="" />
+
+        <div class="type-selector" id="typeSelector">
+          <button type="button" class="type-btn active" data-type="Expense">Expense</button>
+          <button type="button" class="type-btn" data-type="Income">Income</button>
+          <button type="button" class="type-btn" data-type="Savings">Savings</button>
+        </div>
+
+        <div class="amount-box">
+          <div class="amount-top">
+            <label for="amount">Amount (₹) *</label>
+            <button type="button" class="calc-toggle-btn" id="toggleCalcBtn">🧮 Calc</button>
+          </div>
+          <div class="amount-input-row">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="amount" step="0.01" min="0.01" placeholder="0.00" required />
+          </div>
+        </div>
+
+        <!-- Simple Calculator Keypad -->
+        <div class="calc-pad" id="calcPad">
+          <div class="calc-expr" id="calcExpr"></div>
+          <div class="calc-grid" id="calcGrid">
+            <button type="button" class="calc-key clr" data-key="C">C</button>
+            <button type="button" class="calc-key op" data-key="BACK">⌫</button>
+            <button type="button" class="calc-key op" data-key="/">÷</button>
+            <button type="button" class="calc-key op" data-key="*">×</button>
+
+            <button type="button" class="calc-key" data-key="7">7</button>
+            <button type="button" class="calc-key" data-key="8">8</button>
+            <button type="button" class="calc-key" data-key="9">9</button>
+            <button type="button" class="calc-key op" data-key="-">−</button>
+
+            <button type="button" class="calc-key" data-key="4">4</button>
+            <button type="button" class="calc-key" data-key="5">5</button>
+            <button type="button" class="calc-key" data-key="6">6</button>
+            <button type="button" class="calc-key op" data-key="+">+</button>
+
+            <button type="button" class="calc-key" data-key="1">1</button>
+            <button type="button" class="calc-key" data-key="2">2</button>
+            <button type="button" class="calc-key" data-key="3">3</button>
+            <button type="button" class="calc-key eq" data-key="=">=</button>
+
+            <button type="button" class="calc-key" data-key="0" style="grid-column: span 2;">0</button>
+            <button type="button" class="calc-key" data-key=".">.</button>
+            <button type="button" class="calc-key eq" data-key="USE">Use ₹</button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="field-label" for="txUser">User *</label>
+            <select id="txUser" required></select>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="category">Category *</label>
+            <select id="category" required>
+              <option value="Food">🍔 Food</option>
+              <option value="Transport">🚌 Transport</option>
+              <option value="Bills">🧾 Bills</option>
+              <option value="Grocery">🛒 Grocery</option>
+              <option value="Health">🩺 Health</option>
+              <option value="Salary">💼 Salary</option>
+              <option value="Investment">📊 Investment</option>
+              <option value="Other">📦 Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="date">Date *</label>
+            <input type="date" id="date" required />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="note">Note (Optional)</label>
+            <input type="text" id="note" placeholder="குறிப்பு சேர்க்கவும்..." maxlength="60" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn" id="submitBtn">+ சேர்க்கவும் (Save Entry)</button>
+          <button type="button" class="cancel-edit-btn" id="cancelEditBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Export (All vs Date-to-Date) & Import -->
+    <div class="backup-card">
+      <div class="backup-title-row">
+        <span class="backup-label">💾 Backup / Export</span>
+        <div class="scope-toggle" id="exportScopeToggle">
+          <button type="button" class="scope-btn active" data-scope="all">All Data</button>
+          <button type="button" class="scope-btn" data-scope="range">Date to Date</button>
+        </div>
+      </div>
+
+      <div class="date-range-row" id="dateRangeRow">
+        <div class="form-group">
+          <label class="field-label" for="exportFrom">From Date</label>
+          <input type="date" id="exportFrom" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="exportTo">To Date</label>
+          <input type="date" id="exportTo" />
+        </div>
+      </div>
+
+      <div class="backup-bar">
+        <button type="button" class="action-btn" id="exportJsonBtn">⬇️ JSON</button>
+        <button type="button" class="action-btn" id="exportCsvBtn">📊 CSV</button>
+        <button type="button" class="action-btn" id="importBtn">⬆️ Import</button>
+        <input type="file" id="importFileInput" accept=".json,.csv" hidden />
+      </div>
+    </div>
+
+    <!-- History + Day / Month / Year + Type Filters -->
+    <div class="history-header">
+      <div class="section-title" style="margin-bottom: 0;">📜 பரிவர்த்தனைகள்</div>
+      <span class="count-badge" id="recordCount">0</span>
+    </div>
+
+    <!-- Day / Month / Year Filter Controls -->
+    <div class="period-bar" id="periodBar">
+      <button type="button" class="period-btn active" data-period="all">All Time</button>
+      <button type="button" class="period-btn" data-period="day">📅 Day</button>
+      <button type="button" class="period-btn" data-period="month">🗓️ Month</button>
+      <button type="button" class="period-btn" data-period="year">📆 Year</button>
+    </div>
+
+    <div class="period-picker-wrap" id="dayPickerWrap">
+      <input type="date" id="filterDayInput" aria-label="Filter by Day" />
+    </div>
+
+    <div class="period-picker-wrap" id="monthPickerWrap">
+      <input type="month" id="filterMonthInput" aria-label="Filter by Month" />
+    </div>
+
+    <div class="period-picker-wrap" id="yearPickerWrap">
+      <input type="number" id="filterYearInput" min="2000" max="2100" placeholder="Year (எ.கா. 2026)" aria-label="Filter by Year" />
+    </div>
+
+    <!-- Type Filter Tabs -->
+    <div class="filter-tabs" id="filterTabs">
+      <button type="button" class="filter-tab active" data-filter="All">All</button>
+      <button type="button" class="filter-tab" data-filter="Income">Income</button>
+      <button type="button" class="filter-tab" data-filter="Expense">Expense</button>
+      <button type="button" class="filter-tab" data-filter="Savings">Savings</button>
+    </div>
+
+    <div class="tx-list" id="txList"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      const CURRENCY = "₹";
+      const STORAGE_KEY = "daily_finance_tracker_inr_v1";
+      const USERS_KEY = "daily_finance_users_inr_v1";
+
+      const categoryIcons = {
+        Food: "🍔",
+        Transport: "🚌",
+        Bills: "🧾",
+        Grocery: "🛒",
+        Health: "🩺",
+        Salary: "💼",
+        Investment: "📊",
+        Other: "📦"
+      };
+
+      let users = JSON.parse(localStorage.getItem(USERS_KEY)) || ["Me", "Spouse"];
+      if (!Array.isArray(users) || users.length === 0) users = ["Me"];
+
+      let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (!Array.isArray(transactions)) {
+        const legacy = JSON.parse(localStorage.getItem("daily_finance_tracker_v2"))
+          || JSON.parse(localStorage.getItem("daily_finance_tracker_v1"))
+          || [];
+        transactions = legacy.map((t) => ({
+          ...t,
+          user: t.user || users[0]
+        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+      }
+
+      let activeUserFilter = "All";
+      let currentType = "Expense";
+      let currentFilter = "All";
+      let currentPeriod = "all"; // all | day | month | year
+      let exportScope = "all"; // all | range
+      let calcExpr = "";
+
+      // DOM Elements
+      const userPillsEl = document.getElementById("userPills");
+      const addUserBtn = document.getElementById("addUserBtn");
+      const txUserSelect = document.getElementById("txUser");
+      const activeScopePill = document.getElementById("activeScopePill");
+      const netBalanceEl = document.getElementById("netBalance");
+      const totalIncomeEl = document.getElementById("totalIncome");
+      const totalExpenseEl = document.getElementById("totalExpense");
+      const totalSavingsEl = document.getElementById("totalSavings");
+      const barExpense = document.getElementById("barExpense");
+      const barSavings = document.getElementById("barSavings");
+      const barRemain = document.getElementById("barRemain");
+      const expPctEl = document.getElementById("expPct");
+      const savPctEl = document.getElementById("savPct");
+
+      const formCard = document.getElementById("formCard");
+      const formTitle = document.getElementById("formTitle");
+      const txForm = document.getElementById("txForm");
+      const editIdInput = document.getElementById("editId");
+      const submitBtn = document.getElementById("submitBtn");
+      const cancelEditBtn = document.getElementById("cancelEditBtn");
+      const typeSelector = document.getElementById("typeSelector");
+      const amountInput = document.getElementById("amount");
+      const categoryInput = document.getElementById("category");
+      const dateInput = document.getElementById("date");
+      const noteInput = document.getElementById("note");
+
+      // Calculator Elements
+      const toggleCalcBtn = document.getElementById("toggleCalcBtn");
+      const calcPad = document.getElementById("calcPad");
+      const calcExprEl = document.getElementById("calcExpr");
+      const calcGrid = document.getElementById("calcGrid");
+
+      // Export / Import Elements
+      const exportScopeToggle = document.getElementById("exportScopeToggle");
+      const dateRangeRow = document.getElementById("dateRangeRow");
+      const exportFromInput = document.getElementById("exportFrom");
+      const exportToInput = document.getElementById("exportTo");
+      const exportJsonBtn = document.getElementById("exportJsonBtn");
+      const exportCsvBtn = document.getElementById("exportCsvBtn");
+      const importBtn = document.getElementById("importBtn");
+      const importFileInput = document.getElementById("importFileInput");
+
+      // History Filter Elements
+      const periodBar = document.getElementById("periodBar");
+      const dayPickerWrap = document.getElementById("dayPickerWrap");
+      const monthPickerWrap = document.getElementById("monthPickerWrap");
+      const yearPickerWrap = document.getElementById("yearPickerWrap");
+      const filterDayInput = document.getElementById("filterDayInput");
+      const filterMonthInput = document.getElementById("filterMonthInput");
+      const filterYearInput = document.getElementById("filterYearInput");
+      const filterTabs = document.getElementById("filterTabs");
+      const txListEl = document.getElementById("txList");
+      const recordCountEl = document.getElementById("recordCount");
+      const toastEl = document.getElementById("toast");
+
+      function getTodayStr() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function setDefaultDates() {
+        const today = getTodayStr();
+        dateInput.value = today;
+        filterDayInput.value = today;
+        filterMonthInput.value = today.slice(0, 7);
+        filterYearInput.value = today.slice(0, 4);
+        exportFromInput.value = today.slice(0, 8) + "01";
+        exportToInput.value = today;
+      }
+
+      let toastTimer;
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2500);
+      }
+
+      function saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      }
+
+      function formatINR(num) {
+        return CURRENCY + Number(num).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, (m) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[m]));
+      }
+
+      // 2. Users: Add & Delete
+      function renderUsers() {
+        txUserSelect.innerHTML = users
+          .map((u) => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`)
+          .join("");
+
+        if (activeUserFilter !== "All" && users.includes(activeUserFilter)) {
+          txUserSelect.value = activeUserFilter;
+        }
+
+        const allChip = `
+          <div class="user-chip-wrap ${activeUserFilter === "All" ? "active" : ""}">
+            <button type="button" class="user-chip" data-user="All">👥 All</button>
+          </div>`;
+
+        const userChips = users
+          .map((u) => `
+            <div class="user-chip-wrap ${activeUserFilter === u ? "active" : ""}">
+              <button type="button" class="user-chip" data-user="${escapeHtml(u)}">👤 ${escapeHtml(u)}</button>
+              <button type="button" class="user-del-btn" data-del-user="${escapeHtml(u)}" title="Delete User">✕</button>
+            </div>`)
+          .join("");
+
+        userPillsEl.innerHTML = allChip + userChips;
+      }
+
+      userPillsEl.addEventListener("click", (e) => {
+        const delBtn = e.target.closest("[data-del-user]");
+        if (delBtn) {
+          const targetUser = delBtn.getAttribute("data-del-user");
+          deleteUser(targetUser);
+          return;
+        }
+
+        const chip = e.target.closest(".user-chip");
+        if (!chip) return;
+        activeUserFilter = chip.dataset.user;
+        renderUsers();
+        render();
+      });
+
+      function deleteUser(userName) {
+        if (users.length <= 1) {
+          showToast("குறைந்தது ஒரு User ஆவது இருக்க வேண்டும்!");
+          return;
+        }
+
+        const count = transactions.filter((t) => (t.user || users[0]) === userName).length;
+        const msg = count > 0
+          ? `"${userName}" என்ற User-ஐ நீக்கவா? அவருடைய ${count} பதிவுகளும் நீக்கப்படும்.`
+          : `"${userName}" என்ற User-ஐ நீக்க விரும்புகிறீர்களா?`;
+
+        if (!confirm(msg)) return;
+
+        users = users.filter((u) => u !== userName);
+        transactions = transactions.filter((t) => (t.user || users[0]) !== userName);
+
+        if (activeUserFilter === userName) {
+          activeUserFilter = "All";
+        }
+
+        if (editIdInput.value) {
+          const editingTx = transactions.find((t) => t.id === editIdInput.value);
+          if (!editingTx) resetFormMode();
+        }
+
+        saveData();
+        renderUsers();
+        render();
+        showToast(`🗑️ "${userName}" நீக்கப்பட்டார்`);
+      }
+
+      addUserBtn.addEventListener("click", () => {
+        const name = prompt("புதிய User பெயரை உள்ளிடவும் (எ.கா. Wife, Brother, Thambi):");
+        if (!name) return;
+        const cleanName = name.trim();
+        if (!cleanName) return;
+        if (cleanName.toLowerCase() === "all") {
+          showToast("'All' என்ற பெயரைப் பயன்படுத்த முடியாது!");
+          return;
+        }
+        if (users.some((u) => u.toLowerCase() === cleanName.toLowerCase())) {
+          showToast("இந்த User ஏற்கனவே உள்ளார்!");
+          return;
+        }
+        users.push(cleanName);
+        activeUserFilter = cleanName;
+        saveData();
+        renderUsers();
+        render();
+        showToast(`👤 "${cleanName}" சேர்க்கப்பட்டார்!`);
+      });
+
+      // 3. Simple Calculator Keypad
+      toggleCalcBtn.addEventListener("click", () => {
+        calcPad.classList.toggle("open");
+        if (calcPad.classList.contains("open") && amountInput.value && !calcExpr) {
+          calcExpr = amountInput.value;
+          calcExprEl.textContent = calcExpr;
+        }
+      });
+
+      function safeEvalMath(expr) {
+        const cleaned = expr.replace(/[^0-9+\-*/.]/g, "");
+        if (!cleaned || /[+\-*/.]$/.test(cleaned)) return null;
+        const result = Function(`"use strict"; return (${cleaned})`)();
+        if (typeof result !== "number" || !isFinite(result)) return null;
+        return Math.round(result * 100) / 100;
+      }
+
+      calcGrid.addEventListener("click", (e) => {
+        const keyBtn = e.target.closest("[data-key]");
+        if (!keyBtn) return;
+        const k = keyBtn.getAttribute("data-key");
+
+        if (k === "C") {
+          calcExpr = "";
+          calcExprEl.textContent = "";
+          amountInput.value = "";
+          return;
+        }
+
+        if (k === "BACK") {
+          calcExpr = calcExpr.slice(0, -1);
+          calcExprEl.textContent = calcExpr;
+          return;
+        }
+
+        if (k === "=") {
+          const val = safeEvalMath(calcExpr || amountInput.value);
+          if (val !== null && val > 0) {
+            amountInput.value = val;
+            calcExpr = String(val);
+            calcExprEl.textContent = `${val}`;
+          } else {
+            showToast("சரியான கணக்கை உள்ளிடவும்!");
+          }
+          return;
+        }
+
+        if (k === "USE") {
+          const val = safeEvalMath(calcExpr || amountInput.value);
+          if (val !== null && val > 0) {
+            amountInput.value = val;
+            calcPad.classList.remove("open");
+            showToast(`₹${val} Amount-ல் சேர்க்கப்பட்டது`);
+          } else {
+            showToast("முதலில் தொகையைக் கணக்கிடவும்!");
+          }
+          return;
+        }
+
+        // Append digit or operator
+        if (!calcExpr && amountInput.value && !["+", "-", "*", "/"].includes(k)) {
+          calcExpr = amountInput.value;
+        }
+        calcExpr += k;
+        calcExprEl.textContent = calcExpr;
+
+        const liveVal = safeEvalMath(calcExpr);
+        if (liveVal !== null && liveVal >= 0) {
+          amountInput.value = liveVal;
+        }
+      });
+
+      // Type Selector
+      function setActiveType(type) {
+        currentType = type;
+        document.querySelectorAll(".type-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.type === type);
+        });
+      }
+
+      typeSelector.addEventListener("click", (e) => {
+        const btn = e.target.closest(".type-btn");
+        if (!btn) return;
+        setActiveType(btn.dataset.type);
+
+        if (!editIdInput.value) {
+          if (currentType === "Income") categoryInput.value = "Salary";
+          else if (currentType === "Savings") categoryInput.value = "Investment";
+          else categoryInput.value = "Food";
+        }
+      });
+
+      // 1. Add & Edit Transaction
+      function resetFormMode() {
+        editIdInput.value = "";
+        formTitle.textContent = "✨ புதிய பதிவு (New Entry)";
+        submitBtn.textContent = "+ சேர்க்கவும் (Save Entry)";
+        submitBtn.classList.remove("editing");
+        cancelEditBtn.classList.remove("show");
+        amountInput.value = "";
+        noteInput.value = "";
+        calcExpr = "";
+        calcExprEl.textContent = "";
+        dateInput.value = getTodayStr();
+      }
+
+      cancelEditBtn.addEventListener("click", () => {
+        resetFormMode();
+        showToast("Edit ரத்து செய்யப்பட்டது");
+      });
+
+      window.startEditTx = function (id) {
+        const tx = transactions.find((t) => t.id === id);
+        if (!tx) return;
+
+        editIdInput.value = tx.id;
+        formTitle.textContent = "✏️ பதிவைத் திருத்துக (Edit Entry)";
+        submitBtn.textContent = "✓ மாற்றங்களைச் சேமி (Update)";
+        submitBtn.classList.add("editing");
+        cancelEditBtn.classList.add("show");
+
+        setActiveType(tx.type || "Expense");
+        amountInput.value = tx.amount;
+        calcExpr = String(tx.amount);
+        calcExprEl.textContent = calcExpr;
+
+        if (tx.user && !users.includes(tx.user)) {
+          users.push(tx.user);
+          renderUsers();
+        }
+        txUserSelect.value = tx.user || users[0];
+        categoryInput.value = tx.category || "Other";
+        dateInput.value = tx.date || getTodayStr();
+        noteInput.value = tx.note || "";
+
+        formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        showToast("✏️ திருத்தத் தயார்");
+      };
+
+      txForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        // If user typed an expression in amount or calc
+        let finalAmount = parseFloat(amountInput.value);
+        if (calcExpr && /[+\-*/]/.test(calcExpr)) {
+          const evaluated = safeEvalMath(calcExpr);
+          if (evaluated !== null && evaluated > 0) finalAmount = evaluated;
+        }
+
+        if (isNaN(finalAmount) || finalAmount <= 0) {
+          showToast("சரியான தொகையை உள்ளிடவும்!");
+          return;
+        }
+
+        const txUser = txUserSelect.value || users[0];
+        const existingId = editIdInput.value;
+
+        if (existingId) {
+          transactions = transactions.map((t) =>
+            t.id === existingId
+              ? {
+                  ...t,
+                  amount: finalAmount,
+                  user: txUser,
+                  type: currentType,
+                  category: categoryInput.value,
+                  date: dateInput.value,
+                  note: noteInput.value.trim()
+                }
+              : t
+          );
+          saveData();
+          resetFormMode();
+          render();
+          showToast("✅ பதிவு புதுப்பிக்கப்பட்டது!");
+        } else {
+          transactions.unshift({
+            id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+            amount: finalAmount,
+            user: txUser,
+            type: currentType,
+            category: categoryInput.value,
+            date: dateInput.value,
+            note: noteInput.value.trim()
+          });
+          saveData();
+          resetFormMode();
+          render();
+          showToast(`✅ ${txUser} (${formatINR(finalAmount)}) சேர்க்கப்பட்டது!`);
+        }
+      });
+
+      // Delete Transaction
+      window.deleteTx = function (id) {
+        if (!confirm("இந்த பதிவை நீக்க விரும்புகிறீர்களா?")) return;
+        transactions = transactions.filter((t) => t.id !== id);
+        if (editIdInput.value === id) resetFormMode();
+        saveData();
+        render();
+        showToast("🗑️ பதிவு நீக்கப்பட்டது");
+      };
+
+      // 4. Period Filter (All / Day / Month / Year) + Type Filter (All / Income / Expense / Savings)
+      periodBar.addEventListener("click", (e) => {
+        const btn = e.target.closest(".period-btn");
+        if (!btn) return;
+        currentPeriod = btn.dataset.period;
+        document.querySelectorAll(".period-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.period === currentPeriod);
+        });
+
+        dayPickerWrap.classList.toggle("show", currentPeriod === "day");
+        monthPickerWrap.classList.toggle("show", currentPeriod === "month");
+        yearPickerWrap.classList.toggle("show", currentPeriod === "year");
+
+        render();
+      });
+
+      filterDayInput.addEventListener("change", render);
+      filterMonthInput.addEventListener("change", render);
+      filterYearInput.addEventListener("input", render);
+
+      filterTabs.addEventListener("click", (e) => {
+        const tab = e.target.closest(".filter-tab");
+        if (!tab) return;
+        document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentFilter = tab.dataset.filter;
+        renderList();
+      });
+
+      function matchesPeriod(txDateStr) {
+        if (!txDateStr) return currentPeriod === "all";
+        if (currentPeriod === "day") {
+          return filterDayInput.value ? txDateStr === filterDayInput.value : true;
+        }
+        if (currentPeriod === "month") {
+          return filterMonthInput.value ? txDateStr.startsWith(filterMonthInput.value) : true;
+        }
+        if (currentPeriod === "year") {
+          const yr = String(filterYearInput.value || "").trim();
+          return yr ? txDateStr.startsWith(yr + "-") : true;
+        }
+        return true;
+      }
+
+      function getFilteredTransactions() {
+        return transactions.filter((tx) => {
+          const userOk = activeUserFilter === "All" || (tx.user || users[0]) === activeUserFilter;
+          const periodOk = matchesPeriod(tx.date);
+          return userOk && periodOk;
+        });
+      }
+
+      function render() {
+        const scoped = getFilteredTransactions();
+
+        const periodText = currentPeriod === "all"
+          ? "All Time"
+          : currentPeriod === "day"
+          ? `Day: ${filterDayInput.value || ""}`
+          : currentPeriod === "month"
+          ? `Month: ${filterMonthInput.value || ""}`
+          : `Year: ${filterYearInput.value || ""}`;
+
+        activeScopePill.textContent = activeUserFilter === "All"
+          ? `All Users • ${periodText}`
+          : `${activeUserFilter} • ${periodText}`;
+
+        let income = 0, expense = 0, savings = 0;
+
+        scoped.forEach((tx) => {
+          const amt = Number(tx.amount) || 0;
+          if (tx.type === "Income") income += amt;
+          else if (tx.type === "Expense") expense += amt;
+          else if (tx.type === "Savings") savings += amt;
+        });
+
+        const balance = income - expense - savings;
+
+        totalIncomeEl.textContent = formatINR(income);
+        totalExpenseEl.textContent = formatINR(expense);
+        totalSavingsEl.textContent = formatINR(savings);
+        netBalanceEl.textContent = (balance < 0 ? "-" : "") + formatINR(Math.abs(balance));
+
+        const base = income > 0 ? income : (expense + savings);
+        if (base > 0) {
+          const expPct = Math.min(100, Math.round((expense / base) * 100));
+          const savPct = Math.min(100 - expPct, Math.round((savings / base) * 100));
+          const remPct = Math.max(0, 100 - expPct - savPct);
+
+          barExpense.style.width = expPct + "%";
+          barSavings.style.width = savPct + "%";
+          barRemain.style.width = remPct + "%";
+          expPctEl.textContent = `Expense: ${expPct}%`;
+          savPctEl.textContent = `Savings: ${savPct}%`;
+        } else {
+          barExpense.style.width = "0%";
+          barSavings.style.width = "0%";
+          barRemain.style.width = "100%";
+          expPctEl.textContent = "Expense: 0%";
+          savPctEl.textContent = "Savings: 0%";
+        }
+
+        renderList();
+      }
+
+      function renderList() {
+        const scoped = getFilteredTransactions();
+        const sorted = [...scoped].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const filtered = currentFilter === "All"
+          ? sorted
+          : sorted.filter((t) => t.type === currentFilter);
+
+        recordCountEl.textContent = `${filtered.length}`;
+
+        if (filtered.length === 0) {
+          txListEl.innerHTML = `
+            <div class="empty-state">
+              📭 இந்த Filter-ல் பதிவுகள் எதுவும் இல்லை.<br>புதிய பதிவைச் சேர்க்கவும் அல்லது Filter-ஐ மாற்றவும்.
+            </div>`;
+          return;
+        }
+
+        txListEl.innerHTML = filtered.map((tx) => {
+          const icon = categoryIcons[tx.category] || "📦";
+          const sign = tx.type === "Income" ? "+" : tx.type === "Expense" ? "-" : "";
+          const colorClass = tx.type === "Income"
+            ? "income-text"
+            : tx.type === "Expense"
+            ? "expense-text"
+            : "savings-text";
+
+          const itemUser = tx.user || users[0];
+          const safeNote = escapeHtml(tx.note || "");
+          const metaText = safeNote ? `${tx.date} • ${safeNote}` : tx.date;
+
+          return `
+            <div class="tx-item">
+              <div class="tx-left">
+                <div class="tx-icon ${tx.type}">${icon}</div>
+                <div class="tx-info">
+                  <div class="tx-cat">
+                    <span>${escapeHtml(tx.category)}</span>
+                    <span class="badge ${tx.type}">${tx.type}</span>
+                    <span class="user-tag">${escapeHtml(itemUser)}</span>
+                  </div>
+                  <div class="tx-meta">${metaText}</div>
+                </div>
+              </div>
+              <div class="tx-right">
+                <div class="tx-amount ${colorClass}">${sign}${formatINR(tx.amount)}</div>
+                <button type="button" class="edit-btn" onclick="startEditTx('${tx.id}')" title="Edit">✎</button>
+                <button type="button" class="delete-btn" onclick="deleteTx('${tx.id}')" title="Delete">✕</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // 5. Export (All vs Date to Date) & Import
+      exportScopeToggle.addEventListener("click", (e) => {
+        const btn = e.target.closest(".scope-btn");
+        if (!btn) return;
+        exportScope = btn.dataset.scope;
+        document.querySelectorAll(".scope-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.scope === exportScope);
+        });
+        dateRangeRow.classList.toggle("show", exportScope === "range");
+      });
+
+      function getExportTransactions() {
+        if (exportScope !== "range") return transactions;
+
+        const fromD = exportFromInput.value;
+        const toD = exportToInput.value;
+
+        if (!fromD || !toD) {
+          showToast("From மற்றும் To தேதிகளைத் தேர்ந்தெடுக்கவும்!");
+          return null;
+        }
+        if (fromD > toD) {
+          showToast("From Date, To Date-க்கு முன்பாக இருக்க வேண்டும்!");
+          return null;
+        }
+
+        return transactions.filter((t) => t.date >= fromD && t.date <= toD);
+      }
+
+      exportJsonBtn.addEventListener("click", () => {
+        const dataToExport = getExportTransactions();
+        if (!dataToExport) return;
+        if (!dataToExport.length) return showToast("தேர்ந்தெடுக்கப்பட்ட பிரிவில் டேட்டா இல்லை!");
+
+        const suffix = exportScope === "range"
+          ? `${exportFromInput.value}_to_${exportToInput.value}`
+          : `all_${getTodayStr()}`;
+
+        const payload = { currency: CURRENCY, users, transactions: dataToExport };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        downloadBlob(blob, `daily-tracker-inr-${suffix}.json`);
+        showToast(`📥 ${dataToExport.length} பதிவுகள் JSON Export ஆயின`);
+      });
+
+      exportCsvBtn.addEventListener("click", () => {
+        const dataToExport = getExportTransactions();
+        if (!dataToExport) return;
+        if (!dataToExport.length) return showToast("தேர்ந்தெடுக்கப்பட்ட பிரிவில் டேட்டா இல்லை!");
+
+        const suffix = exportScope === "range"
+          ? `${exportFromInput.value}_to_${exportToInput.value}`
+          : `all_${getTodayStr()}`;
+
+        const headers = ["id", "date", "user", "type", "category", "amount", "note"];
+        const rows = dataToExport.map((t) =>
+          headers.map((h) => `"${String(t[h] ?? "").replace(/"/g, '""')}"`).join(",")
+        );
+        const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        downloadBlob(blob, `daily-tracker-inr-${suffix}.csv`);
+        showToast(`📥 ${dataToExport.length} பதிவுகள் CSV Export ஆயின`);
+      });
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      importBtn.addEventListener("click", () => importFileInput.click());
+
+      importFileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          try {
+            const content = event.target.result;
+            let importedTx = [];
+            let importedUsers = [];
+
+            if (file.name.toLowerCase().endsWith(".json")) {
+              const parsed = JSON.parse(content);
+              if (Array.isArray(parsed)) {
+                importedTx = parsed;
+              } else if (parsed && Array.isArray(parsed.transactions)) {
+                importedTx = parsed.transactions;
+                if (Array.isArray(parsed.users)) importedUsers = parsed.users;
+              } else {
+                throw new Error("Invalid JSON");
+              }
+            } else if (file.name.toLowerCase().endsWith(".csv")) {
+              importedTx = parseCSV(content);
+            } else {
+              throw new Error("Unsupported format");
+            }
+
+            const validRecords = importedTx
+              .filter((item) => item && !isNaN(parseFloat(item.amount)) && item.type && item.date)
+              .map((item) => {
+                const uName = (item.user || users[0]).trim();
+                if (uName && !users.includes(uName)) users.push(uName);
+                return {
+                  id: item.id ? String(item.id) : Date.now().toString() + Math.random().toString(36).slice(2, 6),
+                  amount: parseFloat(item.amount),
+                  user: uName || users[0],
+                  type: ["Income", "Expense", "Savings"].includes(item.type) ? item.type : "Expense",
+                  category: item.category || "Other",
+                  date: item.date,
+                  note: item.note || ""
+                };
+              });
+
+            importedUsers.forEach((u) => {
+              if (u && !users.includes(u)) users.push(u);
+            });
+
+            if (!validRecords.length) return showToast("⚠️ சரியான பதிவுகள் இல்லை");
+
+            const merge = confirm(
+              `${validRecords.length} பதிவுகள் உள்ளன.\n\nOK = பழைய டேட்டாவுடன் இணைக்கவும் (Merge)\nCancel = பழையதை நீக்கிவிட்டு புதிதாக மாற்றவும் (Replace)`
+            );
+
+            if (merge) {
+              const existingIds = new Set(transactions.map((t) => t.id));
+              transactions = [...validRecords.filter((t) => !existingIds.has(t.id)), ...transactions];
+            } else {
+              transactions = validRecords;
+            }
+
+            saveData();
+            renderUsers();
+            render();
+            showToast(`✅ ${validRecords.length} பதிவுகள் Import ஆயின!`);
+          } catch (err) {
+            showToast("❌ கோப்பைப் படிப்பதில் பிழை!");
+          } finally {
+            importFileInput.value = "";
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      function parseCSV(text) {
+        const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).filter((l) => l.trim());
+        if (lines.length < 2) return [];
+        const headers = splitCSVLine(lines[0]).map((h) => h.trim().toLowerCase());
+        return lines.slice(1).map((line) => {
+          const vals = splitCSVLine(line);
+          const obj = {};
+          headers.forEach((h, i) => { obj[h] = vals[i] !== undefined ? vals[i] : ""; });
+          return obj;
+        });
+      }
+
+      function splitCSVLine(line) {
+        const result = [];
+        let cur = "", inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+            else inQuotes = !inQuotes;
+          } else if (ch === "," && !inQuotes) {
+            result.push(cur); cur = "";
+          } else cur += ch;
+        }
+        result.push(cur);
+        return result;
+      }
+
+      // Init
+      setDefaultDates();
+      renderUsers();
+      render();
+    })();
+  </script>
+</body>
+</html>
